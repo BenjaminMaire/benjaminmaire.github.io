@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Benjamin MAIRE</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0A0E29; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.94) translateY(24px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes modalOut {
+            from { opacity: 1; transform: scale(1) translateY(0); }
+            to   { opacity: 0; transform: scale(0.94) translateY(16px); }
+        }
+        @keyframes backdropIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        @keyframes backdropOut {
+            from { opacity: 1; }
+            to   { opacity: 0; }
+        }
+        .modal-panel { animation: modalIn 0.3s cubic-bezier(0.34, 1.2, 0.64, 1) both; }
+        .modal-backdrop { animation: backdropIn 0.2s ease both; }
+    </style>
+</head>
+
+<!--
+  overflow-x-hidden  → masque le débordement horizontal (évite la scrollbar h.)
+  text-slate-200     → couleur de texte par défaut : gris très clair (slate = ardoise)
+  antialiased        → lissage des polices pour un rendu plus net
+  style="..."        → CSS inline pour la couleur de fond (valeur hex personnalisée)
+-->
+<body class="overflow-x-hidden text-slate-200 antialiased" style="background-color: #0A0E29;">
+
+<!--
+=============================================================================
+  GUIDE TAILWIND CSS — Référence rapide des classes utilisées dans ce fichier
+=============================================================================
+
+  Tailwind est un framework "utility-first" : pas de CSS dans un fichier séparé,
+  on applique des classes directement sur les éléments HTML.
+  Exemple : class="text-xl font-bold text-blue-500"
+    → text-xl = taille XL | font-bold = gras | text-blue-500 = couleur bleue
+
+  ── RESPONSIVE (préfixes de breakpoint) ────────────────────────────────────
+  Sans préfixe  → s'applique sur TOUS les écrans (mobile en premier)
+  sm:           → ≥ 640px  (petites tablettes)
+  md:           → ≥ 768px  (tablettes)
+  lg:           → ≥ 1024px (PC)
+  xl:           → ≥ 1280px (grands écrans)
+  Exemple : "hidden md:flex" → invisible sur mobile, affiché en flex à partir de 768px
+
+  ── FLEXBOX ────────────────────────────────────────────────────────────────
+  flex            → active le mode flexbox sur le conteneur
+  flex-col        → enfants disposés en colonne (vertical)
+  flex-row        → enfants en ligne (horizontal, c'est le défaut)
+  flex-wrap       → les enfants passent à la ligne si manque de place
+  items-center    → centre sur l'axe secondaire (vertical si flex-row)
+  items-start     → aligne en haut
+  justify-center  → centre sur l'axe principal (horizontal si flex-row)
+  justify-between → pousse les enfants aux deux extrémités
+  gap-N           → espace entre les enfants (N unités, 1 unité = 4px)
+  shrink-0        → empêche un élément de rétrécir dans un flex
+
+  ── GRID ────────────────────────────────────────────────────────────────────
+  grid            → active la grille CSS
+  grid-cols-N     → N colonnes égales (ex: grid-cols-3)
+  md:grid-cols-2  → 2 colonnes à partir de 768px
+  col-span-full   → s'étend sur toutes les colonnes
+  gap-N           → espace entre les cellules
+  gap-x-N / gap-y-N → espaces horizontal / vertical séparément
+
+  ── POSITIONNEMENT ──────────────────────────────────────────────────────────
+  relative        → sert de repère pour les enfants "absolute"
+  absolute        → sorti du flux, positionné par rapport au parent "relative"
+  fixed           → fixé à la fenêtre, reste en place lors du scroll
+  inset-0         → top=0, right=0, bottom=0, left=0 → remplit tout le parent
+  top-N / right-N → position depuis le haut / la droite
+  z-N             → z-index : contrôle quel élément est "au-dessus"
+  -z-10           → z-index négatif : passe derrière le contenu normal
+
+  ── ESPACEMENT (1 unité Tailwind = 4px) ────────────────────────────────────
+  p-N             → padding (espace intérieur) sur tous les côtés
+  px-N / py-N     → padding horizontal / vertical
+  pt-N / pb-N / pl-N / pr-N → padding haut / bas / gauche / droite
+  m-N / mx-N      → margin (espace extérieur) / horizontal
+  mb-N / mt-N     → margin-bottom / margin-top
+  space-y-N       → ajoute un margin-top entre chaque enfant (axe vertical)
+
+  ── TAILLES ─────────────────────────────────────────────────────────────────
+  w-full          → width: 100%
+  w-N             → largeur fixe (ex: w-16 = 64px)
+  w-1/3 / w-2/3  → largeur fractionnée (33% / 66%)
+  h-screen        → height: 100vh (toute la hauteur de la fenêtre)
+  h-N             → hauteur fixe
+  max-w-N         → largeur maximum
+  w-[500px]       → valeur CSS arbitraire entre crochets [ ]
+
+  ── TYPOGRAPHIE ─────────────────────────────────────────────────────────────
+  text-xs / sm / base / lg / xl / 2xl / 3xl / 4xl / 5xl → taille de texte
+  font-bold / font-semibold / font-medium → graisse du texte
+  uppercase       → met le texte EN MAJUSCULES
+  tracking-widest → écarte les lettres (letter-spacing: 0.1em)
+  leading-relaxed → interligne confortable (line-height: 1.625)
+  text-center / text-right → alignement
+  line-clamp-2    → coupe le texte après 2 lignes avec "…"
+  italic          → texte en italique
+
+  ── COULEURS ET OPACITÉ ─────────────────────────────────────────────────────
+  text-blue-400   → texte bleu (nuances : 50 clair → 900 foncé, 500 = normal)
+  bg-blue-600     → fond bleu-600
+  border-gray-700 → bordure grise-700
+  bg-[#0A0E29]    → couleur hexadécimale personnalisée (brackets = valeur libre)
+  bg-blue-900/20  → fond bleu-900 avec 20% d'opacité (notation /N = alpha)
+  border-white/10 → bordure blanche à 10% d'opacité
+  opacity-0       → complètement transparent | opacity-100 → opaque
+
+  ── BORDURES ET ARRONDIS ────────────────────────────────────────────────────
+  border          → bordure 1px solid
+  border-2        → bordure 2px
+  rounded-lg / rounded-2xl / rounded-full → coins arrondis (full = cercle)
+  ring-1          → "outline" décoratif autour de l'élément (2e bordure)
+
+  ── OMBRES ──────────────────────────────────────────────────────────────────
+  shadow-lg / shadow-2xl → ombre portée (l = large, 2xl = très grande)
+  shadow-blue-900/50     → ombre colorée avec opacité
+
+  ── HOVER ET INTERACTIONS ───────────────────────────────────────────────────
+  hover:bg-blue-700  → au survol de la souris, fond bleu-700
+  hover:text-white   → au survol, texte blanc
+  hover:scale-110    → au survol, zoom à 110%
+  hover:-translate-y-2 → au survol, monte de 8px
+  hover:border-blue-400 → au survol, bordure bleue
+  transition         → active les transitions fluides (0.15s par défaut)
+  duration-300       → durée de la transition = 300ms
+  transition-colors  → transition uniquement sur les propriétés de couleur
+
+  ── PATRON "group" (interaction parent → enfant) ────────────────────────────
+  group              → marque le PARENT comme groupe
+  group-hover:text-blue-400 → quand le PARENT est survolé, l'enfant réagit
+  Exemple : survoler une carte change la couleur du titre qui est à l'intérieur.
+
+  ── EFFETS VISUELS ──────────────────────────────────────────────────────────
+  backdrop-blur-md   → flou de l'arrière-plan (effet "verre dépoli")
+  blur-3xl           → flou appliqué à l'élément lui-même
+  overflow-hidden    → masque tout ce qui dépasse du conteneur
+  overflow-y-auto    → scrollbar verticale uniquement si le contenu dépasse
+  object-cover       → l'image couvre tout son conteneur (recadrée si besoin)
+  object-contain     → l'image s'adapte sans être recadrée
+  cursor-pointer     → curseur "main" (indique que l'élément est cliquable)
+  animate-pulse      → animation de pulsation en boucle
+  antialiased        → lissage des polices
+
+  ── DÉGRADÉS ────────────────────────────────────────────────────────────────
+  bg-gradient-to-r   → dégradé de gauche (from-) à droite (to-)
+  bg-gradient-to-br  → dégradé vers le coin bas-droite
+  from-blue-400      → couleur de départ du dégradé
+  to-purple-500      → couleur d'arrivée
+  via-blue-100       → couleur intermédiaire
+  bg-clip-text + text-transparent → applique le dégradé au texte lui-même
+=============================================================================
+-->
+
+    <!-- ====================================================================
+         BARRE DE NAVIGATION
+         <nav> : élément sémantique HTML5 pour la navigation principale.
+         Toujours visible grâce à "fixed", passe devant tout avec "z-50".
+    ===================================================================== -->
+    <nav class="w-full fixed px-5 lg:px-8 xl:px-[8%] py-4 flex items-center justify-between z-50 transition-all duration-300 backdrop-blur-md bg-[#0A0E29]/70 border-b border-white/10">
+        <!--
+          w-full          → occupe toute la largeur de l'écran
+          fixed           → reste collé en haut même quand on scrolle
+          px-5            → padding horizontal 20px (mobile)
+          lg:px-8         → padding horizontal 32px sur grand écran
+          xl:px-[8%]      → valeur arbitraire 8% sur très grand écran
+          py-4            → padding vertical 16px
+          flex            → barre en flexbox : logo + liens + bouton côte à côte
+          items-center    → centre verticalement les éléments
+          justify-between → logo à gauche, bouton à droite, liens au milieu
+          z-50            → passe au-dessus de tout le reste de la page
+          backdrop-blur-md → flou de fond (effet verre dépoli)
+          bg-[#0A0E29]/70 → fond bleu nuit personnalisé à 70% d'opacité
+          border-b        → bordure uniquement en bas
+          border-white/10 → bordure blanche à 10% d'opacité (très subtile)
+        -->
+
+        <!-- Logo "BM." avec un dégradé appliqué au texte lui-même -->
+        <div class="flex items-center gap-4">
+            <!--
+              bg-clip-text    → le dégradé ne s'applique QU'au texte
+              text-transparent → rend le fond du texte visible (sans ça : texte noir)
+              bg-gradient-to-r → dégradé horizontal gauche→droite
+              from-blue-400    → commence en bleu
+              to-purple-500    → termine en violet
+            -->
+             <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">BM.</span>
+        </div>
+
+        <!--
+          Liens de navigation — cachés sur mobile, visibles en flex à partir de md (768px)
+          hidden md:flex → display:none par défaut, display:flex à ≥768px
+          <ul> : liste non ordonnée | <li> : élément de liste | <a> : lien
+        -->
+        <ul class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+            <!-- href="#formation" → lien ancre vers la section avec id="formation" -->
+            <!-- hover:text-blue-400 → texte bleu au survol -->
+            <!-- transition → transition fluide pour le changement de couleur -->
+            <li><a href="#formation" class="hover:text-blue-400 transition">Ma formation</a></li>
+            <li><a href="#competences" class="hover:text-blue-400 transition">Compétences</a></li>
+            <li><a href="#entreprise" class="hover:text-blue-400 transition">Alternance</a></li>
+            <li><a href="#projets" class="hover:text-blue-400 transition">Projets</a></li>
+            <li><a href="#veille" class="hover:text-blue-400 transition">Veille Technologique</a></li>
+        </ul>
+
+        <!-- Bouton Contact — caché sur mobile et tablette (hidden), visible en flex sur lg+ -->
+        <a href="#contact" class="hidden lg:flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition shadow-lg shadow-blue-900/50">
+            <!--
+              rounded-full    → bouton complètement arrondi (pilule)
+              shadow-blue-900/50 → ombre bleue à 50% d'opacité (ombre colorée)
+            -->
+            Contact
+        </a>
+
+        <!-- Bouton hamburger ☰ — visible uniquement sur mobile (block md:hidden) -->
+        <button class="block md:hidden text-white text-2xl" onclick="openMenu()">☰</button>
+
+        <!--
+          Menu latéral mobile (drawer) — caché hors écran à droite par défaut
+          fixed top-0 right-0   → collé en haut à droite de la fenêtre
+          h-screen              → hauteur 100vh (toute la fenêtre)
+          w-64                  → largeur fixe de 16rem (256px)
+          transform translate-x-full → décalé de 100% à droite (hors écran)
+          transition-transform  → animate le déplacement avec JS
+          z-[60]                → z-index 60 (devant la nav qui est z-50)
+        -->
+        <ul id="sideMenu" class="fixed top-0 right-0 h-screen w-64 bg-[#111633] shadow-2xl flex flex-col gap-6 py-20 px-10 transform translate-x-full transition-transform duration-300 z-[60]">
+            <!-- absolute → positionné par rapport au <ul> parent (qui est fixed) -->
+            <div class="absolute right-6 top-6 text-2xl cursor-pointer" onclick="closeMenu()">✕</div>
+            <li><a href="#formation" onclick="closeMenu()">Ma formation</a></li>
+            <li><a href="#competences" onclick="closeMenu()">Compétences</a></li>
+            <li><a href="#entreprise" onclick="closeMenu()">Alternance</a></li>
+            <li><a href="#projets" onclick="closeMenu()">Projets</a></li>
+            <li><a href="#veille" onclick="closeMenu()">Veille Tech</a></li>
+            <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- ====================================================================
+         SECTION HÉROS (page d'accueil)
+         <header> : élément sémantique HTML5 pour l'en-tête de la page.
+         Occupe toute la hauteur de l'écran (h-screen = 100vh).
+         "relative" permet de positionner l'effet de halo en absolute.
+    ===================================================================== -->
+    <header class="w-full h-screen flex flex-col items-center justify-center text-center px-4 relative">
+
+        <!-- Halo décoratif en arrière-plan — cercle flou bleu centré -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-3xl -z-10"></div>
+        <!--
+          absolute          → sorti du flux, positionné par rapport au <header> (relative)
+          top-1/2 left-1/2  → place le coin haut-gauche au centre exact
+          -translate-x-1/2  → décale de -50% de sa propre largeur → centrage parfait
+          -translate-y-1/2  → idem verticalement
+          w-[500px] h-[500px] → taille fixe de 500px (valeur arbitraire)
+          bg-blue-900/20    → fond bleu très foncé à 20% d'opacité
+          rounded-full      → parfaitement rond
+          blur-3xl          → flou intense → halo lumineux
+          -z-10             → passe DERRIÈRE le texte (z-index négatif)
+        -->
+
+        <!-- <h3> : sous-titre (hiérarchie 3) | <h1> : titre principal -->
+        <h3 class="text-xl md:text-2xl text-blue-300 mb-2 font-medium">Bonjour, je suis Benjamin MAIRE 👋</h3>
+
+        <!-- Titre avec dégradé de couleur appliqué au texte -->
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-200">
+            <!--
+              text-4xl        → 36px sur mobile
+              md:text-6xl     → 60px sur tablette
+              lg:text-7xl     → 72px sur PC
+              via-blue-100    → couleur intermédiaire dans le dégradé (blanc → bleu clair → bleu)
+            -->
+            Apprenti Développeur
+        </h1>
+
+        <!-- max-w-2xl : largeur max 42rem (672px) | mx-auto : centré horizontalement -->
+        <p class="max-w-2xl mx-auto text-gray-400 text-lg mb-8">
+            En BTS SIO (SLAM) au CFA ITIS • En alternance chez <span class="text-blue-400 font-semibold">Barcodis</span>
+        </p>
+
+        <!--
+          Boutons CTA — flex-col sur mobile (empilés), flex-row sur sm+ (côte à côte)
+          <a> utilisé comme bouton : il navigue vers une ancre de la page
+        -->
+        <div class="flex flex-col sm:flex-row gap-4">
+            <!-- Bouton primaire : fond blanc, texte bleu foncé -->
+            <a href="#contact" class="px-8 py-3 rounded-full bg-white text-blue-900 font-semibold hover:bg-gray-100 transition shadow-lg">
+                Me contacter
+            </a>
+            <!-- Bouton secondaire : transparent avec bordure bleue -->
+            <a href="#projets" class="px-8 py-3 rounded-full border border-blue-500 text-blue-300 hover:bg-blue-900/30 transition">
+                <!--
+                  border border-blue-500  → bordure 1px bleue
+                  hover:bg-blue-900/30    → fond bleu très foncé à 30% au survol
+                -->
+                Voir mes projets
+            </a>
+        </div>
+    </header>
+
+    <!-- ====================================================================
+         SECTION PARCOURS
+         <section> : élément sémantique HTML5 pour une section de contenu.
+         id="experience" → permet de cibler cette section via un lien ancre.
+         container       → centre le contenu et lui donne une largeur max.
+         mx-auto         → centre horizontalement (margin auto gauche+droite).
+         py-20           → padding vertical 80px (5rem) en haut et en bas.
+    ===================================================================== -->
+    <section id="experience" class="container mx-auto px-6 py-20">
+        <!-- <h2> : titre de niveau 2 (sous-titre de section) -->
+        <h2 class="text-center text-3xl md:text-4xl font-bold text-white mb-16"><span class="text-blue-500">Mon</span> Parcours</h2>
+
+        <!--
+          Grille 3 colonnes — responsive :
+          grid-cols-1   → 1 colonne sur mobile
+          md:grid-cols-3→ 3 colonnes sur tablette et au-delà
+          max-w-6xl     → largeur maximum 72rem (1152px)
+          mx-auto       → centré dans la page
+        -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+
+            <!--
+              Carte de parcours — patron "group" pour l'effet hover
+              group               → marque cette carte comme parent du groupe
+              hover:bg-[#1a2352] → fond légèrement plus clair au survol
+              hover:-translate-y-2→ la carte "monte" de 8px au survol
+              rounded-2xl         → coins très arrondis (border-radius: 1rem)
+              shadow-xl           → ombre portée grande
+            -->
+            <div class="bg-[#131b40] border border-white/5 rounded-2xl p-8 hover:bg-[#1a2352] transition hover:-translate-y-2 shadow-xl group">
+                <div class="h-16 w-16 mb-4 bg-white/10 p-3 rounded-lg flex items-center justify-center text-blue-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.499 5.24 50.552 50.552 0 00-2.658.813m-15.482 0A50.55 50.55 0 0112 13.489a50.55 50.55 0 0112-4.433m-15.482 0A50.538 50.538 0 0112 5.493a50.534 50.534 0 0112 4.433M3 14.25v6.75m18-6.75v6.75" />
+                    </svg>
+                </div>
+                <!-- group-hover:text-blue-400 → le titre devient bleu quand la CARTE ENTIÈRE est survolée -->
+                <h3 class="text-2xl font-bold text-white group-hover:text-blue-400 transition">Bac Scientifique</h3>
+                <!-- <br> : retour à la ligne | opacity-70 → texte à 70% d'opacité (légèrement grisé) -->
+                <p class="text-gray-400 mt-2">Sciences de l'Ingénieur<br><span class="text-sm opacity-70">Obtenu</span></p>
+            </div>
+
+            <div class="bg-[#131b40] border border-white/5 rounded-2xl p-8 hover:bg-[#1a2352] transition hover:-translate-y-2 shadow-xl group">
+                <img src="./images/ITIS_logo.png" alt="Logo CFA ITIS" class="h-16 object-contain mb-4 bg-white/10 p-2 rounded-lg">
+                <h3 class="text-2xl font-bold text-white group-hover:text-blue-400 transition">CFA ITIS</h3>
+                <p class="text-gray-400 mt-2">BTS SIO option SLAM<br><span class="text-sm opacity-70">2024 - 2026</span></p>
+            </div>
+
+            <div class="bg-[#131b40] border border-white/5 rounded-2xl p-8 hover:bg-[#1a2352] transition hover:-translate-y-2 shadow-xl group">
+                <img src="./images/LOGO_BARCODIS.png" alt="Logo Barcodis" class="h-16 object-contain mb-4 bg-white/90 p-2 rounded-lg">
+                <h3 class="text-2xl font-bold text-white group-hover:text-blue-400 transition">Barcodis</h3>
+                <p class="text-gray-400 mt-2">Apprenti Développeur<br><span class="text-sm opacity-70">2024 - 2026</span></p>
+            </div>
+
+            
+
+        </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION FORMATION
+         flex-col lg:flex-row : colonne sur mobile, ligne sur grand écran
+         bg-[#131b40]/50     : fond semi-transparent (50% d'opacité)
+         rounded-3xl         : coins très arrondis (1.5rem)
+    ===================================================================== -->
+    <section id="formation" class="container mx-auto px-6 py-20">
+        <h2 class="text-center text-3xl md:text-4xl font-bold text-white mb-16">Ma <span class="text-blue-500">Formation</span></h2>
+
+        <!--
+          Bloc image + texte côte à côte sur grand écran
+          flex-col        → empilé sur mobile
+          lg:flex-row     → côte à côte sur PC (≥1024px)
+          items-center    → aligne verticalement au centre
+          bg-[#131b40]/50 → fond bleu nuit à 50% d'opacité
+          rounded-3xl     → très arrondi (plus que 2xl)
+          mb-12           → marge basse de 48px (séparation avec la suite)
+        -->
+        <div class="flex flex-col lg:flex-row items-center gap-12 bg-[#131b40]/50 p-8 rounded-3xl border border-white/5 mb-12">
+
+            <!-- Colonne gauche : occupe 1/3 de la largeur sur grand écran -->
+            <div class="lg:w-1/3 flex justify-center">
+                <!--
+                  target="_blank" → ouvre le lien dans un nouvel onglet
+                  relative group  → repère pour l'halo absolu + patron group
+                -->
+                <a href="https://cfa-itis.com" target="_blank" class="relative group">
+                    <!--
+                      Halo bleu derrière l'image — effet de lueur au survol
+                      absolute inset-0    → recouvre exactement le parent (a)
+                      blur                → flou pour créer la lueur
+                      opacity-20          → discret par défaut
+                      group-hover:opacity-40 → plus visible au survol du lien
+                      duration-500        → transition de 500ms (plus lente = plus douce)
+                    -->
+                    <div class="absolute inset-0 bg-blue-500 rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                    <!--
+                      relative z-10       → passe AU-DESSUS du halo (qui est absolute)
+                      rotate-2            → légère rotation de 2° pour un effet "polaroïd"
+                      group-hover:rotate-0→ se redresse au survol
+                      object-cover        → l'image remplit tout le conteneur, recadrée si besoin
+                    -->
+                    <img src="./images/CFA_ITIS.jpg" alt="CFA ITIS" class="relative z-10 w-full max-w-sm rounded-xl shadow-2xl border border-white/10 rotate-2 group-hover:rotate-0 transition duration-500 object-cover">
+                </a>
+            </div>
+            
+            <div class="lg:w-2/3 space-y-6 text-gray-300 leading-relaxed">
+                <h3 class="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+                    <img src="./images/ITIS_logo.png" class="h-8 bg-white/10 p-1 rounded"> Le BTS SIO
+                </h3>
+                <p>
+                    Le <strong>BTS SIO</strong> (Services Informatiques aux Organisations) est un diplôme d'État Bac+2 qui forme aux métiers de l'informatique d'entreprise. 
+                    Il répond aux attentes des organisations en matière de gestion des infrastructures et de développement d'applications.
+                </p>
+                <p>
+                    La formation débute par un <strong>socle commun</strong> (culture informatique, économie, droit, cybersécurité de base) avant de se spécialiser au second semestre vers l'une des deux options ci-dessous.
+                </p>
+                <div class="pt-6 flex flex-col sm:flex-row gap-4 items-center">
+                <a href="./documents/Tableau_de_synthèse_E5_Benjamin_MAIRE.xlsx" download class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition shadow-lg shadow-blue-900/50 font-medium text-sm">
+                📥 Télécharger mon Tableau de Synthèse E5
+                </a>
+                <a href="https://pedagogie.ac-reunion.fr/fileadmin/ANNEXES-ACADEMIQUES/03-PEDAGOGIE/02-COLLEGE/langues-vivantes/anglais/images_Nawaz/BTS_SIO/REFERENTIEL_BTS_SIO-_RENOVATION_SESSION_2022-SIGNETS.pdf" target="_blank" class="text-blue-400 hover:text-white underline underline-offset-4 transition text-sm flex items-center gap-2">
+                📄 Voir le référentiel officiel
+                </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div class="bg-[#0f1535] border border-white/5 rounded-2xl p-8 hover:border-cyan-500/50 transition duration-300 shadow-lg group relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                    <svg class="w-24 h-24 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                </div>
+
+                <h3 class="text-2xl font-bold text-cyan-400 mb-4">Option SISR</h3>
+                <p class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-6">Infrastructures, Systèmes & Réseaux</p>
+                
+                <p class="text-gray-300 mb-6 text-sm leading-relaxed">
+                    Spécialisation axée sur l’installation, l’administration et la sécurisation des équipements et réseaux informatiques. L’expert SISR garantit le bon fonctionnement du matériel.
+                </p>
+
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm text-gray-400">
+                        <span class="text-cyan-500 mt-1">➤</span> Gestion de parc informatique & support utilisateur
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-gray-400">
+                        <span class="text-cyan-500 mt-1">➤</span> Administration Système (Windows Server, Linux)
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-gray-400">
+                        <span class="text-cyan-500 mt-1">➤</span> Configuration Réseau (Switch, Routeur, VLAN)
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-gray-400">
+                        <span class="text-cyan-500 mt-1">➤</span> Virtualisation & Cloud Computing
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-[#1a2352] border-2 border-blue-500/30 rounded-2xl p-8 hover:border-blue-400 transition duration-300 shadow-2xl relative overflow-hidden ring-1 ring-blue-500/20">
+                <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                    <svg class="w-24 h-24 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                </div>
+
+                <div class="flex justify-between items-start">
+                    <h3 class="text-2xl font-bold text-blue-400 mb-4">Option SLAM</h3>
+                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Mon Option</span>
+                </div>
+                <p class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-6">Solutions Logicielles & Applications Métiers</p>
+                
+                <p class="text-gray-300 mb-6 text-sm leading-relaxed">
+                    Spécialisation centrée sur la conception, le développement et la maintenance de programmes et d'applications. L'expert SLAM traduit les besoins métiers en solutions numériques.
+                </p>
+
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm text-gray-300">
+                        <span class="text-blue-400 mt-1">➤</span> Analyse des besoins & Rédaction de cahier des charges
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-gray-300">
+                        <span class="text-blue-400 mt-1">➤</span> Développement Web (HTML, CSS, JS, PHP...)
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-gray-300">
+                        <span class="text-blue-400 mt-1">➤</span> Développement Logiciel (C#, Java, Python)
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-gray-300">
+                        <span class="text-blue-400 mt-1">➤</span> Gestion de Bases de Données (SQL) & API
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION COMPÉTENCES
+         flex-wrap justify-center : les icônes de technos s'enroulent
+         naturellement en plusieurs lignes, centrées.
+    ===================================================================== -->
+    <section id="competences" class="container mx-auto px-6 py-20">
+        <h2 class="text-center text-3xl md:text-4xl font-bold text-white mb-16">Mes <span class="text-blue-500">Compétences</span></h2>
+
+        <div class="mb-12">
+            <!-- uppercase : TOUT EN MAJUSCULES | tracking-widest : lettres très espacées -->
+            <h3 class="text-xl text-gray-400 mb-6 text-center uppercase tracking-widest text-sm">Stack Technique</h3>
+
+            <!--
+              flex-wrap       → les cartes passent à la ligne automatiquement
+              justify-center  → centrées horizontalement
+              gap-6           → 24px d'espace entre chaque carte
+            -->
+            <div class="flex flex-wrap justify-center gap-6">
+
+                <!--
+                  Carte de techno : carré blanc avec logo + nom
+                  w-28 h-28       → 112px × 112px (taille fixe)
+                  flex-col        → logo au-dessus du texte (colonne)
+                  items-center    → centré horizontalement
+                  justify-center  → centré verticalement
+                  hover:scale-110 → zoom 110% au survol (effet pop)
+                  transition      → animation fluide du zoom
+                -->
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/HTML5_logo.png" class="h-10" alt="HTML"> <span class="font-bold text-sm">HTML</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/CSS3_logo.png" class="h-10" alt="CSS"> <span class="font-bold text-sm">CSS</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/JS_logo.png" class="h-10" alt="JS"> <span class="font-bold text-sm">JS</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/react_logo.png" class="h-10" alt="React"> <span class="font-bold text-sm">React</span>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/android_logo.png" class="h-10" alt="Android"> <span class="font-bold text-sm">Android</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/java_logo.png" class="h-10" alt="Java"> <span class="font-bold text-sm">Java</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/kotlin_logo.png" class="h-10" alt="Kotlin"> <span class="font-bold text-sm">Kotlin</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/springboot_logo.png" class="h-10" alt="Spring Boot"> <span class="font-bold text-[10px] text-center leading-tight">Spring Boot</span>
+                </div>
+
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/Logo_C_sharp.svg.png" class="h-10" alt="C#"> <span class="font-bold text-sm">C#</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/NET_logo.png" class="h-10" alt=".NET"> <span class="font-bold text-sm">.NET</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/SQL_logo.png" class="h-10" alt="SQL"> <span class="font-bold text-sm">SQL</span>
+                </div>
+                <div class="bg-white rounded-xl p-4 w-28 h-28 flex flex-col items-center justify-center gap-2 hover:scale-110 transition shadow-lg text-gray-800">
+                    <img src="./images/mysql_logo.png" class="h-10" alt="MySQL"> <span class="font-bold text-sm">MySQL</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-xl text-gray-400 mb-6 text-center uppercase tracking-widest text-sm">Outils & Environnement</h3>
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="bg-[#1e293b] border border-gray-700 rounded-xl p-4 w-32 h-24 flex flex-col items-center justify-center gap-2 hover:border-blue-400 transition text-gray-200">
+                    <span class="font-bold">VS Code</span>
+                </div>
+                <div class="bg-[#1e293b] border border-gray-700 rounded-xl p-4 w-32 h-24 flex flex-col items-center justify-center gap-2 hover:border-blue-400 transition text-gray-200">
+                    <span class="font-bold text-center leading-tight">Android Studio</span>
+                </div>
+                <div class="bg-[#1e293b] border border-gray-700 rounded-xl p-4 w-32 h-24 flex flex-col items-center justify-center gap-2 hover:border-blue-400 transition text-gray-200">
+                    <span class="font-bold">Git / GitHub</span>
+                </div>
+                <div class="bg-[#1e293b] border border-gray-700 rounded-xl p-4 w-32 h-24 flex flex-col items-center justify-center gap-2 hover:border-blue-400 transition text-gray-200">
+                    <span class="font-bold">SQL Server</span>
+                </div>
+                <div class="bg-[#1e293b] border border-gray-700 rounded-xl p-4 w-32 h-24 flex flex-col items-center justify-center gap-2 hover:border-blue-400 transition text-gray-200">
+                    <span class="font-bold text-center leading-tight">Zebra Designer</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION ALTERNANCE
+         bg-gradient-to-b : dégradé du haut vers le bas
+         from-[#0A0E29]   : couleur de départ (bleu nuit profond)
+         to-[#0f1538]     : couleur d'arrivée (bleu légèrement différent)
+         border-t         : bordure uniquement en haut (ligne de séparation)
+    ===================================================================== -->
+    <section id="entreprise" class="container mx-auto px-6 py-20 bg-gradient-to-b from-[#0A0E29] to-[#0f1538] border-t border-white/5">
+        <h2 class="text-center text-3xl md:text-4xl font-bold text-white mb-16">Mon <span class="text-blue-500">Alternance</span></h2>
+        
+        <div class="flex flex-col lg:flex-row gap-12 items-start">
+            
+            <div class="lg:w-1/3 flex flex-col gap-6">
+                <div class="bg-white rounded-2xl p-6 flex items-center justify-center shadow-lg">
+                    <img src="./images/LOGO_BARCODIS.png" alt="Barcodis" class="w-full max-w-[200px] object-contain">
+                </div>
+                
+                <div class="bg-[#131b40] rounded-2xl p-6 border border-white/10 shadow-lg">
+                    <h3 class="text-blue-400 font-bold uppercase tracking-widest text-sm mb-4 border-b border-white/10 pb-2">Statuts</h3>
+                    
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex justify-between items-center">
+                            <span class="text-gray-400">Raison Sociale</span>
+                            <span class="text-white font-semibold">Barcodis</span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span class="text-gray-400">Forme Juridique</span>
+                            <span class="text-white font-semibold">SAS</span> </li>
+                        <li class="flex justify-between items-center">
+                            <span class="text-gray-400">Date de création</span>
+                            <span class="text-white font-semibold">2002</span>
+                        </li>
+                        <li class="flex justify-between items-center">
+                            <span class="text-gray-400">Siège Social</span>
+                            <span class="text-white font-semibold text-right">Villebon-sur-Yvette<br>(Essonne)</span>
+                        </li>
+                         <li class="flex justify-between items-center">
+                            <span class="text-gray-400">Secteur</span>
+                            <span class="text-white font-semibold text-right">Traçabilité &<br>Identification Auto.</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-6 pt-4 border-t border-white/10 text-center">
+                        <a href="https://www.barcodis.com" target="_blank" class="inline-flex items-center gap-2 text-blue-400 hover:text-white transition text-sm font-medium">
+                            Voir le site officiel <span>→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:w-2/3 flex flex-col gap-8">
+                
+                <div class="bg-[#131b40]/50 p-8 rounded-2xl border border-white/5 text-gray-300 leading-relaxed space-y-4">
+                    <p>
+                        <strong class="text-white">Barcodis</strong> est un acteur majeur et un intégrateur de solutions complètes dédiées à l'identification automatique et à la mobilité professionnelle. L'entreprise ne se contente pas de distribuer du matériel, elle apporte une véritable valeur ajoutée technique via son bureau d'études.
+                    </p>
+                    <p>
+                        Elle accompagne ses clients (Industrie, Transport, Logistique, Santé) dans la transformation numérique de leur chaîne d'approvisionnement (Supply Chain) grâce aux technologies de pointe :
+                    </p>
+                    <ul class="grid sm:grid-cols-2 gap-2 text-sm mt-2">
+                        <li class="flex items-center gap-2"><span class="text-blue-500">✔</span> Code-barres (1D/2D) & Imprimantes thermiques</li>
+                        <li class="flex items-center gap-2"><span class="text-blue-500">✔</span> RFID (Identification par radiofréquence)</li>
+                        <li class="flex items-center gap-2"><span class="text-blue-500">✔</span> Infrastructures Wi-Fi industrielles</li>
+                        <li class="flex items-center gap-2"><span class="text-blue-500">✔</span> Développement de logiciels sur-mesure</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-xl text-white font-bold mb-6 flex items-center gap-3">
+                        <span class="bg-blue-600 w-2 h-6 rounded-full"></span> Mes missions en entreprise
+                    </h3>
+                    
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700 hover:border-blue-400 hover:bg-[#253248] transition group">
+                            <div class="mb-4 bg-blue-900/30 w-12 h-12 flex items-center justify-center rounded-lg text-2xl group-hover:scale-110 transition">💻</div>
+                            <h4 class="text-white font-bold mb-2">Développement Applicatif</h4>
+                            <p class="text-sm text-gray-400">Conception et maintenance d'applications métier (C#, .NET, Android) pour répondre aux besoins spécifiques des clients internes et externes.</p>
+                        </div>
+
+                        <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700 hover:border-blue-400 hover:bg-[#253248] transition group">
+                            <div class="mb-4 bg-purple-900/30 w-12 h-12 flex items-center justify-center rounded-lg text-2xl group-hover:scale-110 transition">🗄️</div>
+                            <h4 class="text-white font-bold mb-2">Gestion de Données (SQL)</h4>
+                            <p class="text-sm text-gray-400">Administration des bases de données SQL Server, création de requêtes complexes et interfaçage avec l'ERP (ex: SAGE).</p>
+                        </div>
+
+                        <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700 hover:border-blue-400 hover:bg-[#253248] transition group">
+                            <div class="mb-4 bg-green-900/30 w-12 h-12 flex items-center justify-center rounded-lg text-2xl group-hover:scale-110 transition">📝</div>
+                            <h4 class="text-white font-bold mb-2">Documentation Technique</h4>
+                            <p class="text-sm text-gray-400">Rédaction de procédures d'installation, de manuels utilisateurs et de documentation technique pour assurer la pérennité des projets.</p>
+                        </div>
+
+                        <div class="bg-[#1e293b] p-6 rounded-xl border border-gray-700 hover:border-blue-400 hover:bg-[#253248] transition group">
+                            <div class="mb-4 bg-red-900/30 w-12 h-12 flex items-center justify-center rounded-lg text-2xl group-hover:scale-110 transition">🛡️</div>
+                            <h4 class="text-white font-bold mb-2">Support & Sécurité</h4>
+                            <p class="text-sm text-gray-400">Assistance technique de niveau 2, gestion des droits utilisateurs et application des bonnes pratiques de cybersécurité.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION PROJETS
+         Grille responsive : 1 col mobile → 2 cols tablette → 3 cols PC.
+         Chaque carte utilise le patron "group" pour l'overlay au survol.
+    ===================================================================== -->
+    <section id="projets" class="container mx-auto px-6 py-20">
+        <h2 class="text-center text-3xl md:text-4xl font-bold text-white mb-16">Mes <span class="text-blue-500">Projets</span></h2>
+
+        <!-- ── PROJETS PROFESSIONNELS ───────────────────────────────────────── -->
+        <div class="mb-20">
+            <h3 class="text-2xl font-bold text-white mb-8 border-l-4 border-blue-500 pl-4">💼 Projets Professionnels</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#131b40] border border-white/5 hover:border-blue-400 transition shadow-lg" onclick="openModal('BARCOTAG')">
+                    <div class="h-48 bg-gradient-to-br from-blue-900 to-gray-900 flex items-center justify-center">
+                        <span class="text-4xl">📱</span>
+                    </div>
+                    <div class="p-6 relative z-20">
+                        <h3 class="text-2xl font-bold text-white mb-1">BarcoTag</h3>
+                        <p class="text-orange-400 text-sm mb-2">Continental • Java & EPC SGTIN-198</p>
+                        <p class="text-gray-400 text-xs line-clamp-2">
+                            Application Android de scan GS1 DataMatrix et d'encodage RFID UHF au format EPC SGTIN-198 pour la traçabilité automobile.
+                        </p>
+                    </div>
+                    <div class="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#131b40] border border-white/5 hover:border-red-500/50 transition shadow-lg" onclick="openModal('GONOGO')">
+                    <div class="h-48 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center relative">
+                        <div class="absolute left-10 w-4 h-4 rounded-full bg-green-500 shadow-[0_0_15px_#22c55e] animate-pulse"></div>
+                        <div class="absolute right-10 w-4 h-4 rounded-full bg-red-500 shadow-[0_0_15px_#ef4444]"></div>
+                        <span class="text-4xl">📡</span>
+                    </div>
+                    <div class="p-6 relative z-20">
+                        <h3 class="text-2xl font-bold text-white mb-1">SQY Go / No-Go</h3>
+                        <p class="text-red-400 text-sm mb-2">Safran • Java Android & Zebra DataWedge</p>
+                        <p class="text-gray-400 text-xs line-clamp-2">
+                            Application Android de contrôle logistique multi-modes : scan OP, expédition par zones, contrôle inventaire et emplacement, avec validation regex et intégration DataWedge.
+                        </p>
+                    </div>
+                    <div class="absolute inset-0 bg-red-600/5 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#131b40] border border-white/5 hover:border-teal-500/60 transition shadow-lg" onclick="openModal('SOCAPHI')">
+                    <div class="h-48 bg-gradient-to-br from-teal-900 to-sky-900 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 30% 60%, #0f766e, transparent 60%), radial-gradient(circle at 75% 20%, #0c4a6e, transparent 50%)"></div>
+                        <span class="text-4xl relative z-10">📦</span>
+                    </div>
+                    <div class="p-6 relative z-20">
+                        <h3 class="text-2xl font-bold text-white mb-1">LegitrackCore</h3>
+                        <p class="text-teal-400 text-sm mb-2">Socaphi • VB.NET & .NET Framework 4.0</p>
+                        <p class="text-gray-400 text-xs line-clamp-2">
+                            Application WinForms de logistique (picking, expédition, traçabilité) avec serveur HTTP intégré exposant l'interface en HTML.
+                        </p>
+                    </div>
+                    <div class="absolute inset-0 bg-teal-600/10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#131b40] border border-white/5 hover:border-amber-500/60 transition shadow-lg" onclick="openModal('PANDORE')">
+                    <div class="h-48 bg-gradient-to-br from-amber-900 to-yellow-900 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 30% 60%, #92400e, transparent 60%), radial-gradient(circle at 75% 20%, #713f12, transparent 50%)"></div>
+                        <span class="text-4xl relative z-10">📋</span>
+                    </div>
+                    <div class="p-6 relative z-20">
+                        <h3 class="text-2xl font-bold text-white mb-1">Pandore</h3>
+                        <p class="text-amber-400 text-sm mb-2">BARCODIS • VB.NET & SAGE ERP</p>
+                        <p class="text-gray-400 text-xs line-clamp-2">
+                            Gestion d'inventaire et traçabilité produits avec intégration SAGE, sous-applications Clavis et VerifStock, et serveur HTTP intégré.
+                        </p>
+                    </div>
+                    <div class="absolute inset-0 bg-amber-600/10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── PROJETS EN FORMATION ────────────────────────────────────────── -->
+        <div>
+            <h3 class="text-2xl font-bold text-white mb-8 border-l-4 border-purple-500 pl-4">🎓 Projets en Formation</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#131b40] border border-white/5 hover:border-purple-500/60 transition shadow-lg" onclick="openModal('EVENIX')">
+                    <div class="h-48 bg-gradient-to-br from-purple-900 to-indigo-900 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 30% 50%, #7c3aed, transparent 60%), radial-gradient(circle at 80% 20%, #4338ca, transparent 50%)"></div>
+                        <span class="text-4xl relative z-10">🌐</span>
+                    </div>
+                    <div class="p-6 relative z-20">
+                        <h3 class="text-2xl font-bold text-white mb-1">Evenix</h3>
+                        <p class="text-purple-400 text-sm mb-2">BTS SIO • React & Spring Boot</p>
+                        <p class="text-gray-400 text-xs line-clamp-2">
+                            Plateforme complète de gestion d'événements avec API RESTful, authentification JWT et interface React.
+                        </p>
+                    </div>
+                    <div class="absolute inset-0 bg-purple-600/10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                </div>
+
+                <div class="group relative overflow-hidden rounded-2xl cursor-pointer bg-[#131b40] border border-white/5 hover:border-green-500/60 transition shadow-lg" onclick="openModal('EVENIXMOBILE')">
+                    <div class="h-48 bg-gradient-to-br from-green-900 to-emerald-900 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 30% 60%, #15803d, transparent 60%), radial-gradient(circle at 75% 20%, #065f46, transparent 50%)"></div>
+                        <span class="text-4xl relative z-10">📲</span>
+                    </div>
+                    <div class="p-6 relative z-20">
+                        <h3 class="text-2xl font-bold text-white mb-1">EvenixMobile</h3>
+                        <p class="text-green-400 text-sm mb-2">BTS SIO • React Native & Expo</p>
+                        <p class="text-gray-400 text-xs line-clamp-2">
+                            Application mobile iOS & Android de la plateforme Evenix. Consultation, inscriptions et gestion d'événements.
+                        </p>
+                    </div>
+                    <div class="absolute inset-0 bg-green-600/10 opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+
+
+    <!-- ====================================================================
+         MODALES DE PROJETS
+         Structure commune à toutes les modales :
+         ┌──────────────────────────────────────────────────────────────┐
+         │ [div.modal-backdrop] — fond semi-transparent fixé            │
+         │   └─ [div.modal-panel] — la fenêtre blanche/sombre          │
+         │        ├─ [div] barre d'accent colorée (h-1 en haut)        │
+         │        ├─ [button] bouton de fermeture (×)                   │
+         │        └─ [div.p-8] contenu (titre, stack, fonctions...)    │
+         └──────────────────────────────────────────────────────────────┘
+
+         La classe "hidden" est gérée par JavaScript :
+         openModal()  → retire "hidden" → la modale s'affiche
+         closeModal() → ajoute "hidden" → la modale disparaît
+    ===================================================================== -->
+
+    <div id="BARCOTAG" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'BARCOTAG')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <div class="h-1 w-full bg-gradient-to-r from-orange-400 to-amber-500 rounded-t-2xl"></div>
+
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('BARCOTAG')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <div class="flex flex-wrap items-start justify-between border-b border-white/10 pb-5 mb-8 gap-4">
+                    <div>
+                        <p class="text-orange-400 text-xs font-bold uppercase tracking-widest mb-1">Projet Professionnel</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white">BarcoTag</h2>
+                        <p class="text-gray-400 text-sm mt-1">Traçabilité automobile — EPC SGTIN-198</p>
+                    </div>
+                    <span class="bg-orange-500/10 text-orange-400 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-orange-500/30">Continental</span>
+                </div>
+
+                <div class="space-y-8">
+
+                    <!-- Le Besoin -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-white">
+                            <span class="text-orange-400">🎯</span> Le Besoin
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            L'usine <strong class="text-white">Continental</strong> avait besoin d'optimiser sa traçabilité automobile. L'objectif : développer une application Android capable de lire les codes <strong class="text-white">GS1 DataMatrix</strong> sur des pièces, d'extraire le <strong class="text-white">GTIN-14</strong> et le numéro de série, puis d'encoder ces données dans une puce <strong class="text-white">RFID UHF</strong> au format standard <strong class="text-white">EPC SGTIN-198</strong>. L'application permet aussi la lecture et le décodage des puces déjà encodées pour vérification.
+                        </p>
+                    </div>
+
+                    <!-- Chiffres clés -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-orange-400">4</div>
+                            <div class="text-xs text-gray-400 mt-1">activités Android</div>
+                        </div>
+                        <div class="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-orange-400">208</div>
+                            <div class="text-xs text-gray-400 mt-1">bits EPC SGTIN-198</div>
+                        </div>
+                        <div class="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-orange-400">30</div>
+                            <div class="text-xs text-gray-400 mt-1">minSdk (Android 11)</div>
+                        </div>
+                        <div class="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-orange-400">10</div>
+                            <div class="text-xs text-gray-400 mt-1">classes Java</div>
+                        </div>
+                    </div>
+
+                    <!-- Stack technique -->
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-5 text-gray-400 uppercase tracking-widest">🛠 Stack Technique</h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-orange-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-orange-500 rounded-full"></span> Développement
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>Java Native (pur, sans Kotlin)</li>
+                                    <li>Android Studio</li>
+                                    <li>Gradle 8.0.2</li>
+                                    <li>compileSdk 32 / minSdk 30</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-amber-500 rounded-full"></span> Librairies UI
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>AppCompat 1.4.1</li>
+                                    <li>Material Design 1.5.0</li>
+                                    <li>ConstraintLayout 2.1.3</li>
+                                    <li>Preference 1.2.1</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-red-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-red-500 rounded-full"></span> RFID & Données
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>DeviceAPI AAR (UHF UART natif)</li>
+                                    <li>Standard EPC SGTIN-198</li>
+                                    <li>SharedPreferences</li>
+                                    <li>Parcelable (Intent)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Architecture -->
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-4 text-gray-400 uppercase tracking-widest">🏗 Architecture & Packages</h3>
+                        <div class="grid md:grid-cols-2 gap-4 text-xs text-gray-300">
+                            <div>
+                                <p class="text-white font-semibold mb-2">Activités (4)</p>
+                                <ul class="space-y-1">
+                                    <li class="flex gap-2"><span class="text-orange-400 shrink-0">›</span><span><strong class="text-white">MainActivity</strong> — scan GS1, validation, dialogue</span></li>
+                                    <li class="flex gap-2"><span class="text-orange-400 shrink-0">›</span><span><strong class="text-white">EcritureRFIDActivity</strong> — encodage SGTIN-198 + écriture</span></li>
+                                    <li class="flex gap-2"><span class="text-orange-400 shrink-0">›</span><span><strong class="text-white">LectureRFIDActivity</strong> — lecture + décodage EPC</span></li>
+                                    <li class="flex gap-2"><span class="text-orange-400 shrink-0">›</span><span><strong class="text-white">SettingsActivity</strong> — préférences (CP length, Filter)</span></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="text-white font-semibold mb-2">Packages métier (4)</p>
+                                <ul class="space-y-1">
+                                    <li class="flex gap-2"><span class="text-orange-400 shrink-0">›</span><span><strong class="text-white">gs1</strong> — modèles Gs1, Gtin, parsing GS1</span></li>
+                                    <li class="flex gap-2"><span class="text-orange-400 shrink-0">›</span><span><strong class="text-white">sgtin</strong> — encodeur/décodeur SGTIN-198</span></li>
+                                    <li class="flex gap-2"><span class="text-orange-400 shrink-0">›</span><span><strong class="text-white">utility</strong> — BinaryConverter, HexConverter, AsciiConverter, Logs</span></li>
+                                    <li class="flex gap-2"><span class="text-orange-400 shrink-0">›</span><span><strong class="text-white">fragment</strong> — SettingsFragment (ListPreferences)</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Workflow -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 text-white">⚙️ Flux de traitement</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                            <div class="p-4 rounded-xl border border-white/10 bg-white/5">
+                                <div class="text-2xl mb-2">📷</div>
+                                <h4 class="font-bold text-white text-xs mb-1">1. Scan GS1</h4>
+                                <p class="text-xs text-gray-400">DataMatrix → EditText masqué</p>
+                            </div>
+                            <div class="p-4 rounded-xl border border-orange-500/30 bg-orange-500/10">
+                                <div class="text-2xl mb-2">🔍</div>
+                                <h4 class="font-bold text-orange-400 text-xs mb-1">2. Parse & Valide</h4>
+                                <p class="text-xs text-orange-300/70">Regex GS1 · AI(01) GTIN + AI(21) S/N</p>
+                            </div>
+                            <div class="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10">
+                                <div class="text-2xl mb-2">🔄</div>
+                                <h4 class="font-bold text-amber-400 text-xs mb-1">3. Encode SGTIN-198</h4>
+                                <p class="text-xs text-amber-300/70">Header + Partition + CP + IR + Serial 7-bit</p>
+                            </div>
+                            <div class="p-4 rounded-xl border border-white/10 bg-white/5">
+                                <div class="text-2xl mb-2">📡</div>
+                                <h4 class="font-bold text-white text-xs mb-1">4. Write & Verify</h4>
+                                <p class="text-xs text-gray-400">EPC bank · 52 hex · relecture</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Challenge technique -->
+                    <div class="border-l-4 border-orange-500 bg-orange-500/10 p-5 rounded-r-xl">
+                        <h3 class="font-bold text-orange-400 mb-2 text-sm uppercase tracking-wide">💡 Challenge Technique</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            Le cœur du projet est l'encodage <strong class="text-white">EPC SGTIN-198</strong> : packer les données GS1 dans 208 bits stricts selon le standard EPC. La table de partitions (7 valeurs) détermine comment découper le GTIN en Company Prefix et Item Reference. Le numéro de série est encodé en <strong class="text-white">ASCII 7 bits</strong> (140 bits max = 20 caractères). Avant chaque écriture, l'unicité de la puce est confirmée par lecture TID, et la donnée est vérifiée par relecture comparative post-écriture.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="GONOGO" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'GONOGO')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <div class="h-1 w-full bg-gradient-to-r from-red-500 to-rose-600 rounded-t-2xl"></div>
+
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('GONOGO')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <div class="flex flex-wrap items-start justify-between border-b border-white/10 pb-5 mb-8 gap-4">
+                    <div>
+                        <p class="text-red-400 text-xs font-bold uppercase tracking-widest mb-1">Projet Professionnel — BARCODIS</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white">SQY Go / No-Go</h2>
+                        <p class="text-gray-400 text-sm mt-1">Contrôle logistique multi-modes par scan code-barres</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="bg-red-500/10 text-red-400 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-red-500/30">Java Android</span>
+                        <span class="text-xs text-gray-500">Client : Safran • v4.1</span>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-white">
+                            <span class="text-red-400">📡</span> Le Projet
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            Application Android développée par <strong class="text-white">BARCODIS</strong> pour le site Safran SQY. Elle orchestre plusieurs modes de contrôle logistique via scan code-barres sur terminal industriel <strong class="text-white">Zebra DataWedge</strong> : scan d'ordres de production (OP), contrôle d'emplacement (Enlogement), expédition par zones, contrôle d'inventaire et scan en lot (Batch/Rack). Les fichiers de référence CSV et TXT chargés depuis le stockage externe définissent les zones valides et les OP attendus.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-red-400">11</div>
+                            <div class="text-xs text-gray-400 mt-1">activités</div>
+                        </div>
+                        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-red-400">6</div>
+                            <div class="text-xs text-gray-400 mt-1">formats codes-barres</div>
+                        </div>
+                        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-red-400">5</div>
+                            <div class="text-xs text-gray-400 mt-1">modes de contrôle</div>
+                        </div>
+                        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-red-400">3</div>
+                            <div class="text-xs text-gray-400 mt-1">sons de feedback</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-5 text-gray-400 uppercase tracking-widest">🛠 Stack Technique</h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-red-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-red-500 rounded-full"></span> Application
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>Java Android natif</li>
+                                    <li>Android Gradle Plugin 7.4.2</li>
+                                    <li>Package : com.barcodis.safranandroid</li>
+                                    <li>Logs : /Barcodis/Logs/</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-rose-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-rose-500 rounded-full"></span> Scanner
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>Zebra DataWedge (com.symbol.datawedge)</li>
+                                    <li>BroadcastReceiver DataWedgeReceiver</li>
+                                    <li>Ref zones : zone_expedition.csv</li>
+                                    <li>Ref OP : OP_expedition.txt</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-orange-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-orange-500 rounded-full"></span> Librairies
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>AppCompat 1.6.1</li>
+                                    <li>Material Design 1.8.0</li>
+                                    <li>Kotlin Coroutines 1.6.1</li>
+                                    <li>Lifecycle / ViewModel / Fragment</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 text-white">⚙️ Fonctionnalités clés</h3>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-red-400 mt-0.5 shrink-0">✔</span>
+                                <span>Authentification par mot de passe (PassWordActivity)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-red-400 mt-0.5 shrink-0">✔</span>
+                                <span>Scan OP (Ordres de Production) avec validation regex</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-red-400 mt-0.5 shrink-0">✔</span>
+                                <span>Contrôle emplacement / Enlogement (tiroir)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-red-400 mt-0.5 shrink-0">✔</span>
+                                <span>Expédition par zones (référence zone_expedition.csv)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-red-400 mt-0.5 shrink-0">✔</span>
+                                <span>Contrôle inventaire (InventoryActivity)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-red-400 mt-0.5 shrink-0">✔</span>
+                                <span>Scan en lot Batch et Rack OS Batch</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-red-400 mt-0.5 shrink-0">✔</span>
+                                <span>Vérification heure / date (CheckHourDateActivity)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-red-400 mt-0.5 shrink-0">✔</span>
+                                <span>Feedback sonore : scan reçu, tâche terminée, code inconnu</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-4 text-gray-400 uppercase tracking-widest">🔍 Validation codes-barres — 6 formats regex</h3>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="flex items-center gap-3 text-xs text-gray-300">
+                                <code class="bg-black/30 px-2 py-1 rounded font-mono text-red-300">^[0-9]{"{"}8{"}"}</code>
+                                <span>8 chiffres</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-gray-300">
+                                <code class="bg-black/30 px-2 py-1 rounded font-mono text-red-300">^[0-9]{"{"}10{"}"}</code>
+                                <span>10 chiffres</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-gray-300">
+                                <code class="bg-black/30 px-2 py-1 rounded font-mono text-red-300">^[0-9]{"{"}12{"}"}</code>
+                                <span>12 chiffres</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-gray-300">
+                                <code class="bg-black/30 px-2 py-1 rounded font-mono text-red-300">^[A-Z0-9]{"{"}10{"}"}</code>
+                                <span>10 alphanumériques</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-gray-300">
+                                <code class="bg-black/30 px-2 py-1 rounded font-mono text-red-300">^0000[0-9]{"{"}8{"}"}</code>
+                                <span>Préfixe 0000 + 8 chiffres</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs text-gray-300">
+                                <code class="bg-black/30 px-2 py-1 rounded font-mono text-red-300">^USER[0-9]{"{"}4{"}"}</code>
+                                <span>Identifiant utilisateur</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-900/20 border border-red-500/20 rounded-xl p-5">
+                        <h3 class="text-sm font-bold text-red-400 mb-2">💡 Défi technique</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            L'intégration <strong class="text-white">Zebra DataWedge</strong> repose sur un <strong class="text-white">BroadcastReceiver</strong> dédié : l'app envoie une config via intent (<code class="text-red-300 text-xs">com.symbol.datawedge.api.SET_CONFIG</code>) pour activer/désactiver le scanner selon l'écran actif. La validation des codes scannés utilise 6 expressions régulières différentes selon le mode, éliminant tout recours à une base de données locale. Les fichiers de référence CSV sont chargés depuis le stockage externe (<code class="text-red-300 text-xs">getExternalStoragePublicDirectory</code>) avec gestion des permissions Android 11+ (MANAGE_ALL_FILES_ACCESS_PERMISSION).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="EVENIX" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'EVENIX')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <div class="h-1 w-full bg-gradient-to-r from-purple-500 to-indigo-600 rounded-t-2xl"></div>
+
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('EVENIX')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <div class="flex flex-wrap items-start justify-between border-b border-white/10 pb-5 mb-8 gap-4">
+                    <div>
+                        <p class="text-purple-400 text-xs font-bold uppercase tracking-widest mb-1">Projet BTS SIO SLAM</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white">Evenix</h2>
+                        <p class="text-gray-400 text-sm mt-1">Plateforme web de gestion d'événements</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="bg-purple-500/10 text-purple-400 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-purple-500/30">SPA React</span>
+                        <a href="https://evenix.fr" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-purple-400 hover:text-white transition font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            evenix.fr
+                        </a>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-white">
+                            <span class="text-purple-400">🎯</span> Le Projet
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            Evenix est une SPA React permettant à trois types d'utilisateurs d'interagir avec la plateforme : le <strong class="text-white">Participant</strong> (consultation, inscription), l'<strong class="text-white">Organisateur</strong> (CRUD complet, suivi des capacités) et l'<strong class="text-white">Administrateur</strong> (modération globale). L'API REST Spring Boot expose 36 endpoints répartis en 9 controllers, sécurisés par Spring Security et JWT (HMAC256).
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-purple-400">36</div>
+                            <div class="text-xs text-gray-400 mt-1">endpoints REST</div>
+                        </div>
+                        <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-purple-400">9</div>
+                            <div class="text-xs text-gray-400 mt-1">tables BDD</div>
+                        </div>
+                        <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-purple-400">4</div>
+                            <div class="text-xs text-gray-400 mt-1">rôles utilisateurs</div>
+                        </div>
+                        <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-purple-400">🐳</div>
+                            <div class="text-xs text-gray-400 mt-1">Docker Compose</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-5 text-gray-400 uppercase tracking-widest">🛠 Stack Technique</h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-purple-500 rounded-full"></span> Backend
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>Java 17 + Spring Boot 3.4.5</li>
+                                    <li>Spring Security + JWT (HMAC256)</li>
+                                    <li>Spring Data JPA / Hibernate</li>
+                                    <li>MySQL 5.7</li>
+                                    <li>Spring Mail</li>
+                                    <li>Swagger UI (springdoc-openapi)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-indigo-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-indigo-500 rounded-full"></span> Frontend
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>React 18.3.1 + TypeScript 5.5.3</li>
+                                    <li>Vite 5.4.2</li>
+                                    <li>React Router DOM 7.9.6</li>
+                                    <li>Axios + Tailwind CSS 3.4.1</li>
+                                    <li>Lucide React</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-cyan-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span> Déploiement
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>VPS Hostinger (Ubuntu Server)</li>
+                                    <li>Docker Compose</li>
+                                    <li>Maven + Git / GitHub</li>
+                                    <li>Postman</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 text-white">⚙️ Fonctionnalités clés</h3>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-purple-400 mt-0.5 shrink-0">✔</span>
+                                <span>Authentification JWT stateless + confirmation par email</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-purple-400 mt-0.5 shrink-0">✔</span>
+                                <span>Gestion de 4 rôles : Visiteur, Participant, Organisateur, Admin</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-purple-400 mt-0.5 shrink-0">✔</span>
+                                <span>CRUD complet sur les événements avec gestion de capacité</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-purple-400 mt-0.5 shrink-0">✔</span>
+                                <span>Géolocalisation des lieux (Google Maps API, formule Haversine)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-purple-400 mt-0.5 shrink-0">✔</span>
+                                <span>Dashboard organisateur avec statistiques</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-purple-400 mt-0.5 shrink-0">✔</span>
+                                <span>Dashboard admin avec modération globale</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-purple-400 mt-0.5 shrink-0">✔</span>
+                                <span>Réinitialisation du mot de passe par question de sécurité</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-purple-400 mt-0.5 shrink-0">✔</span>
+                                <span>API documentée via Swagger UI</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/10 flex justify-center">
+                        <a href="https://evenix.fr" target="_blank" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-full transition shadow-lg shadow-purple-900/30 font-medium text-sm">
+                            🌐 Voir le site en production
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="EVENIXMOBILE" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'EVENIXMOBILE')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <div class="h-1 w-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-t-2xl"></div>
+
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('EVENIXMOBILE')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <div class="flex flex-wrap items-start justify-between border-b border-white/10 pb-5 mb-8 gap-4">
+                    <div>
+                        <p class="text-green-400 text-xs font-bold uppercase tracking-widest mb-1">Projet BTS SIO SLAM</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white">EvenixMobile</h2>
+                        <p class="text-gray-400 text-sm mt-1">Application mobile iOS & Android</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-green-500/30">React Native</span>
+                        <span class="text-xs text-gray-500 flex items-center gap-1.5">Companion app de <a href="https://evenix.fr" target="_blank" class="text-green-400 hover:text-white transition ml-1">evenix.fr</a></span>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-white">
+                            <span class="text-green-400">📲</span> Le Projet
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            EvenixMobile communique avec le même <strong class="text-white">backend Spring Boot</strong> que l'application web via l'API REST. Elle propose trois niveaux d'accès : <strong class="text-white">Invité</strong> (consultation libre), <strong class="text-white">Participant</strong> (inscriptions et réservations) et <strong class="text-white">Organisateur</strong> (CRUD complet depuis le mobile). L'authentification repose sur un token JWT stocké en AsyncStorage, injecté automatiquement dans chaque requête.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-green-400">9</div>
+                            <div class="text-xs text-gray-400 mt-1">écrans</div>
+                        </div>
+                        <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-green-400">13</div>
+                            <div class="text-xs text-gray-400 mt-1">appels API</div>
+                        </div>
+                        <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-green-400">2</div>
+                            <div class="text-xs text-gray-400 mt-1">plateformes</div>
+                        </div>
+                        <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-4 text-center">
+                            <div class="text-xl font-bold text-green-400 leading-tight pt-1">JSI</div>
+                            <div class="text-xs text-gray-400 mt-1">Nouvelle archi.</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-5 text-gray-400 uppercase tracking-widest">🛠 Stack Technique</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-green-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-green-500 rounded-full"></span> Core
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>React Native 0.81.5 (JSI activé)</li>
+                                    <li>React 19.1.0</li>
+                                    <li>Expo ~54.0.33</li>
+                                    <li>React Navigation 7.x (Stack Navigator)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-emerald-500 rounded-full"></span> Librairies & API
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>AsyncStorage 2.2.0 (persistance JWT)</li>
+                                    <li>DateTimePicker 8.4.4 (natif iOS/Android)</li>
+                                    <li>API REST Spring Boot (evenix.fr)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 text-white">⚙️ Fonctionnalités clés</h3>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-green-400 mt-0.5 shrink-0">✔</span>
+                                <span>Connexion / inscription avec question de sécurité</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-green-400 mt-0.5 shrink-0">✔</span>
+                                <span>Mode invité (lecture seule sans compte)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-green-400 mt-0.5 shrink-0">✔</span>
+                                <span>Liste des événements avec filtre par plage de dates</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-green-400 mt-0.5 shrink-0">✔</span>
+                                <span>Inscription et désinscription aux événements</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-green-400 mt-0.5 shrink-0">✔</span>
+                                <span>Gestion du profil utilisateur</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-green-400 mt-0.5 shrink-0">✔</span>
+                                <span>Dashboard organisateur (CRUD événements mobile)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-green-400 mt-0.5 shrink-0">✔</span>
+                                <span>Sélecteur de date natif (spinner iOS / dialog Android)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-green-400 mt-0.5 shrink-0">✔</span>
+                                <span>Gestion automatique de l'expiration de session (401 → Login)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-4 text-gray-400 uppercase tracking-widest">🎨 Palette de l'application</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="w-4 h-4 rounded-full bg-[#4CAF50] shadow-[0_0_8px_#4CAF50]"></span>Navigation
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="w-4 h-4 rounded-full bg-[#2196F3] shadow-[0_0_8px_#2196F3]"></span>Action
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="w-4 h-4 rounded-full bg-[#9C27B0] shadow-[0_0_8px_#9C27B0]"></span>Organisateur
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="w-4 h-4 rounded-full bg-[#f44336] shadow-[0_0_8px_#f44336]"></span>Destructif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale SOCAPHI / LegitrackCore -->
+    <div id="SOCAPHI" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'SOCAPHI')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <!-- Barre d'accent teal tout en haut de la fenêtre modale -->
+            <div class="h-1 w-full bg-gradient-to-r from-teal-400 to-sky-500 rounded-t-2xl"></div>
+
+            <!-- Bouton × de fermeture (position absolute par rapport au modal-panel) -->
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('SOCAPHI')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <!-- En-tête : nom du projet + badge technologie -->
+                <div class="flex flex-wrap items-start justify-between border-b border-white/10 pb-5 mb-8 gap-4">
+                    <div>
+                        <p class="text-teal-400 text-xs font-bold uppercase tracking-widest mb-1">Projet Client — BARCODIS</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white">LegitrackCore</h2>
+                        <p class="text-gray-400 text-sm mt-1">Application logistique WinForms avec serveur HTTP intégré</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="bg-teal-500/10 text-teal-400 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-teal-500/30">VB.NET</span>
+                        <span class="text-xs text-gray-500">Client : Socaphi • v1.2.0.17</span>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Description du projet -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-white">
+                            <span class="text-teal-400">📦</span> Le Projet
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            LegitrackCore est une application de gestion logistique développée en <strong class="text-white">VB.NET sur .NET Framework 4.0</strong> pour le client Socaphi. Elle couvre l'ensemble du flux entrepôt : picking par scan EAN, création de commandes d'expédition, traçabilité SSCC et impression d'étiquettes. Elle intègre un <strong class="text-white">serveur HTTP HttpListener</strong> qui convertit dynamiquement les formulaires WinForms en pages HTML, permettant d'accéder à l'application depuis un navigateur sans déploiement additionnel.
+                        </p>
+                    </div>
+
+                    <!-- Statistiques clés (4 chiffres/indicateurs) -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <!-- grid-cols-2 sur mobile → md:grid-cols-4 sur tablette+ -->
+                        <div class="bg-teal-500/10 border border-teal-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-teal-400">13</div>
+                            <div class="text-xs text-gray-400 mt-1">formulaires app</div>
+                        </div>
+                        <div class="bg-teal-500/10 border border-teal-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-teal-400">8</div>
+                            <div class="text-xs text-gray-400 mt-1">formulaires core</div>
+                        </div>
+                        <div class="bg-teal-500/10 border border-teal-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-teal-400">2</div>
+                            <div class="text-xs text-gray-400 mt-1">sources de données</div>
+                        </div>
+                        <div class="bg-teal-500/10 border border-teal-500/20 rounded-xl p-4 text-center">
+                            <div class="text-xl font-bold text-teal-400 leading-tight pt-1">INI</div>
+                            <div class="text-xs text-gray-400 mt-1">configuration</div>
+                        </div>
+                    </div>
+
+                    <!-- Stack technique en 3 colonnes -->
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-5 text-gray-400 uppercase tracking-widest">🛠 Stack Technique</h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <!-- Colonne 1 : Application -->
+                            <div>
+                                <h4 class="text-sm font-bold text-teal-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-teal-500 rounded-full"></span> Application
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>VB.NET (WinForms)</li>
+                                    <li>.NET Framework 4.0 Client Profile</li>
+                                    <li>Cible x86</li>
+                                    <li>Namespace : LegitrackCoreNet</li>
+                                </ul>
+                            </div>
+                            <!-- Colonne 2 : Données -->
+                            <div>
+                                <h4 class="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-sky-500 rounded-full"></span> Données
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>ODBC → base Legitrack (picking)</li>
+                                    <li>SQL Server → base Expédition</li>
+                                    <li>12 tables (commandes, picking, SSCC…)</li>
+                                    <li>Configuration par fichiers INI</li>
+                                </ul>
+                            </div>
+                            <!-- Colonne 3 : Architecture serveur -->
+                            <div>
+                                <h4 class="text-sm font-bold text-cyan-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-cyan-500 rounded-full"></span> Architecture
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>HttpListener (serveur HTTP intégré)</li>
+                                    <li>clsHttpManager : WinForms → HTML</li>
+                                    <li>Crystal Reports (bons de picking)</li>
+                                    <li>CodeSoft (étiquettes logistiques)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fonctionnalités clés -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 text-white">⚙️ Fonctionnalités clés</h3>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-teal-400 mt-0.5 shrink-0">✔</span>
+                                <span>Picking par scan EAN avec gestion des palettes</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-teal-400 mt-0.5 shrink-0">✔</span>
+                                <span>Création et modification de commandes d'expédition</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-teal-400 mt-0.5 shrink-0">✔</span>
+                                <span>Traçabilité SSCC avec historique des événements</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-teal-400 mt-0.5 shrink-0">✔</span>
+                                <span>Gestion des utilisateurs et des droits d'accès</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-teal-400 mt-0.5 shrink-0">✔</span>
+                                <span>Impression Crystal Reports (bons de picking)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-teal-400 mt-0.5 shrink-0">✔</span>
+                                <span>Impression d'étiquettes via CodeSoft</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-teal-400 mt-0.5 shrink-0">✔</span>
+                                <span>Serveur HTTP intégré : accès à l'app via navigateur</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-teal-400 mt-0.5 shrink-0">✔</span>
+                                <span>Configuration sans app.config (fichiers INI)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Défi technique -->
+                    <div class="bg-teal-900/20 border border-teal-500/20 rounded-xl p-5">
+                        <h3 class="text-sm font-bold text-teal-400 mb-2">💡 Défi technique</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            La classe <strong class="text-white">clsHttpManager.vb</strong> convertit dynamiquement les contrôles WinForms en HTML/CSS via <strong class="text-white">System.Net.HttpListener</strong>. Cela permet à l'application desktop d'être accessible depuis n'importe quel navigateur sur le réseau local, sans redéveloppement web — une approche technique originale pour l'époque (.NET 4.0).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale PANDORE -->
+    <div id="PANDORE" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'PANDORE')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <div class="h-1 w-full bg-gradient-to-r from-amber-400 to-yellow-500 rounded-t-2xl"></div>
+
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('PANDORE')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <div class="flex flex-wrap items-start justify-between border-b border-white/10 pb-5 mb-8 gap-4">
+                    <div>
+                        <p class="text-amber-400 text-xs font-bold uppercase tracking-widest mb-1">Projet Client — BARCODIS</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white">Pandore</h2>
+                        <p class="text-gray-400 text-sm mt-1">Gestion d'inventaire & traçabilité produits (SAGE ERP)</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-amber-500/30">VB.NET</span>
+                        <span class="text-xs text-gray-500">Client : Pandore • v1.2.0.17</span>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-white">
+                            <span class="text-amber-400">📋</span> Le Projet
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            Pandore est une application de gestion d'inventaire et de traçabilité produits développée en <strong class="text-white">VB.NET sur .NET Framework 4.0</strong> par BARCODIS. Elle s'interface avec deux bases SQL Server : la base <strong class="text-white">Pandore</strong> (inventaires) et la base <strong class="text-white">SAGE ERP</strong> (articles, stocks, dépôts, lots sérialisés). L'application se décline en trois modules : <strong class="text-white">Pandore</strong> (inventaire principal), <strong class="text-white">Clavis</strong> (gestion des références clés) et <strong class="text-white">VerifStock</strong> (vérification de stock). Comme la version Socaphi, elle embarque un serveur <strong class="text-white">HttpListener</strong> pour exposer les formulaires WinForms en HTML.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-amber-400">18</div>
+                            <div class="text-xs text-gray-400 mt-1">formulaires app</div>
+                        </div>
+                        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-amber-400">8</div>
+                            <div class="text-xs text-gray-400 mt-1">formulaires core</div>
+                        </div>
+                        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-amber-400">2</div>
+                            <div class="text-xs text-gray-400 mt-1">bases SQL Server</div>
+                        </div>
+                        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-center">
+                            <div class="text-3xl font-bold text-amber-400">3</div>
+                            <div class="text-xs text-gray-400 mt-1">sous-applications</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/5 rounded-xl p-5 border border-white/5">
+                        <h3 class="text-xs font-bold mb-5 text-gray-400 uppercase tracking-widest">🛠 Stack Technique</h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div>
+                                <h4 class="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-amber-500 rounded-full"></span> Application
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>VB.NET (WinForms)</li>
+                                    <li>.NET Framework 4.0 Client Profile</li>
+                                    <li>Cible x86 (32-bit)</li>
+                                    <li>Namespace : LegitrackCoreNet</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-yellow-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-yellow-500 rounded-full"></span> Données
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>SQL Server → base Pandore (inventaires)</li>
+                                    <li>SQL Server → SAGE ERP (articles/stocks)</li>
+                                    <li>Tables SAGE : F_ARTICLE, F_LOTSERIE, F_ARTSTOCK, F_DEPOT</li>
+                                    <li>Configuration par fichiers INI</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-orange-400 mb-3 flex items-center gap-2">
+                                    <span class="w-1.5 h-4 bg-orange-500 rounded-full"></span> Architecture
+                                </h4>
+                                <ul class="space-y-1.5 text-xs text-gray-300">
+                                    <li>HttpListener (serveur HTTP intégré)</li>
+                                    <li>clsHttpManager : WinForms → HTML</li>
+                                    <li>clsProduit : pont SAGE ↔ Pandore</li>
+                                    <li>Préférences multi-niveaux (app + user)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 text-white">⚙️ Fonctionnalités clés</h3>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-amber-400 mt-0.5 shrink-0">✔</span>
+                                <span>Consultation et filtrage des produits (référence, désignation, dépôt)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-amber-400 mt-0.5 shrink-0">✔</span>
+                                <span>Gestion des sessions d'inventaire (création, détail, validation)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-amber-400 mt-0.5 shrink-0">✔</span>
+                                <span>Traçabilité des articles sérialisés (lots SAGE)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-amber-400 mt-0.5 shrink-0">✔</span>
+                                <span>Gestion des références inconnues (frmUnknow)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-amber-400 mt-0.5 shrink-0">✔</span>
+                                <span>Export des données inventaire (CSV)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-amber-400 mt-0.5 shrink-0">✔</span>
+                                <span>Impression d'étiquettes produits (CodeSoft)</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-amber-400 mt-0.5 shrink-0">✔</span>
+                                <span>Module Clavis : gestion et modification des numéros de série</span>
+                            </div>
+                            <div class="flex items-start gap-2 text-sm text-gray-300">
+                                <span class="text-amber-400 mt-0.5 shrink-0">✔</span>
+                                <span>Module VerifStock : vérification des quantités en dépôt</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-900/20 border border-amber-500/20 rounded-xl p-5">
+                        <h3 class="text-sm font-bold text-amber-400 mb-2">💡 Défi technique</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            La classe <strong class="text-white">clsProduit.vb</strong> joue un rôle de pont entre deux sources de données hétérogènes : la base Pandore (quantités inventoriées) et SAGE ERP (référence article, code famille, lots sérialisés). Elle consolide en un seul objet les quantités par dépôt issues des tables <strong class="text-white">F_ARTSTOCK</strong> et <strong class="text-white">F_LOTSERIE</strong> de SAGE, permettant un affichage unifié sans duplication de logique dans les formulaires.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         SECTION VEILLE TECHNOLOGIQUE
+         Les cartes des moteurs (Unity, Unreal, Godot) utilisent un fond
+         image via bg-[url(...)] avec un dégradé superposé (z-10) pour
+         rendre le texte lisible malgré la photo de fond.
+    ===================================================================== -->
+    <section id="veille" class="container mx-auto px-6 py-20 border-t border-white/10">
+    <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Veille <span class="text-blue-500">Technologique</span></h2>
+        <p class="text-xl text-gray-400">Thème : <span class="text-white font-semibold">Les Moteurs de Jeux Vidéo & Innovation</span></p>
+        <p class="text-sm text-gray-500 mt-2">Evolution des outils (Unity, Unreal, Godot) et impact sur le développement.</p>
+    </div>
+
+    <div class="mb-16">
+        <h3 class="text-2xl font-bold text-blue-300 mb-8 border-l-4 border-blue-500 pl-4">🎮 Les principaux moteurs</h3>
+
+        <div class="grid md:grid-cols-3 gap-6">
+
+            <div class="group bg-[#131b40] rounded-xl p-1 border border-white/5 hover:border-gray-400 transition cursor-pointer relative overflow-hidden h-64" onclick="openModal('modal-unity')">
+                <!--
+                  Dégradé de lisibilité (z-10) — positionné DEVANT l'image (z-10)
+                  bg-gradient-to-t → dégradé du bas vers le haut
+                  from-black       → noir en bas (zone de texte)
+                  via-gray-900/90  → gris foncé au milieu à 90% d'opacité
+                  to-transparent   → transparent en haut → on voit l'image
+                -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-gray-900/90 to-transparent z-10"></div>
+
+                <!--
+                  Image de fond Unity (z < z-10, donc derrière le dégradé)
+                  bg-[url(...)]       → image de fond via URL (valeur arbitraire)
+                  bg-cover            → l'image couvre tout le conteneur
+                  bg-center           → centrée
+                  bg-no-repeat        → pas de répétition
+                  opacity-50          → semi-transparente par défaut
+                  group-hover:scale-110 → zoom au survol (effet de parallaxe)
+                  group-hover:opacity-70→ plus visible au survol
+                  duration-700        → transition très douce (700ms)
+                -->
+                <div class="absolute inset-0 bg-[url('https://images.seeklogo.com/logo-png/27/1/unity-logo-png_seeklogo-274050.png')] bg-cover bg-center bg-no-repeat opacity-50 group-hover:scale-110 group-hover:opacity-70 transition duration-700"></div>
+
+                <!-- z-20 : passe AU-DESSUS du dégradé (z-10) et de l'image -->
+                <!-- justify-end : le texte est en bas de la carte -->
+                <div class="relative z-20 h-full flex flex-col justify-end p-6">
+                    <h4 class="text-3xl font-bold text-white mb-1">Unity</h4>
+                    <p class="text-gray-300 text-sm">Le standard du mobile et de la VR.</p>
+                    <span class="text-blue-400 text-xs mt-4 font-bold group-hover:underline">Voir l'analyse &rarr;</span>
+                </div>
+            </div>
+
+            <div class="group bg-[#131b40] rounded-xl p-1 border border-white/5 hover:border-gray-400 transition cursor-pointer relative overflow-hidden h-64" onclick="openModal('modal-unreal')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-gray-900/90 to-transparent z-10"></div>
+
+                <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Unreal_Engine_Logo.svg/2509px-Unreal_Engine_Logo.svg.png')] bg-cover bg-center bg-no-repeat opacity-50 group-hover:scale-110 group-hover:opacity-70 transition duration-700"></div>
+
+                <div class="relative z-20 h-full flex flex-col justify-end p-6">
+                    <h4 class="text-3xl font-bold text-white mb-1">Unreal Engine 5</h4>
+                    <p class="text-gray-300 text-sm">La puissance graphique ultime.</p>
+                    <span class="text-blue-400 text-xs mt-4 font-bold group-hover:underline">Voir l'analyse &rarr;</span>
+                </div>
+            </div>
+
+            <div class="group bg-[#131b40] rounded-xl p-1 border border-white/5 hover:border-blue-400 transition cursor-pointer relative overflow-hidden h-64" onclick="openModal('modal-godot')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-gray-900/90 to-transparent z-10"></div>
+
+                <div class="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Godot_icon.svg/1024px-Godot_icon.svg.png')] bg-cover bg-center bg-no-repeat opacity-40 group-hover:scale-110 group-hover:opacity-60 transition duration-700"></div>
+
+                <div class="relative z-20 h-full flex flex-col justify-end p-6">
+                    <h4 class="text-3xl font-bold text-white mb-1">Godot</h4>
+                    <p class="text-gray-300 text-sm">L'alternative Open Source.</p>
+                    <span class="text-blue-400 text-xs mt-4 font-bold group-hover:underline">Voir l'analyse &rarr;</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+        
+
+    <div id="modal-unity" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'modal-unity')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <div class="h-1 w-full bg-gradient-to-r from-gray-300 to-white rounded-t-2xl"></div>
+
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('modal-unity')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <div class="flex items-center justify-between border-b border-white/10 pb-5 mb-6 gap-4">
+                    <div>
+                        <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Moteur de Jeu</p>
+                        <h2 class="text-3xl font-bold text-white">Unity</h2>
+                    </div>
+                    <span class="bg-white/10 text-gray-200 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-white/20">Mobile & VR</span>
+                </div>
+
+                <div class="space-y-6 text-gray-400 leading-relaxed">
+                    <p><strong class="text-white">C'est quoi ?</strong> Le moteur le plus utilisé au monde pour le jeu mobile, la réalité virtuelle (VR/AR) et les jeux indépendants.</p>
+
+                    <div>
+                        <h3 class="font-bold text-base text-blue-400 mb-2">🔍 Mon analyse</h3>
+                        <p class="text-sm">Unity brille par sa communauté immense et son Asset Store. Cependant, la récente polémique sur le "Runtime Fee" (septembre 2023) a fragilisé la confiance des développeurs. Techniquement, l'arrivée de l'ECS (DOTS) promet des performances accrues pour les jeux complexes.</p>
+                    </div>
+
+                    <div class="bg-white/5 p-5 rounded-xl border border-white/5">
+                        <h3 class="font-bold text-xs uppercase text-gray-500 mb-3 tracking-widest">Fiche Technique</h3>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-gray-300 shrink-0"></span><strong class="text-white">Langage :</strong>&nbsp;C#</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-gray-300 shrink-0"></span><strong class="text-white">Architecture :</strong>&nbsp;Component-Based / ECS</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-gray-300 shrink-0"></span><strong class="text-white">Points forts :</strong>&nbsp;Cross-platform, VR/AR, 2D</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-unreal" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'modal-unreal')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <div class="h-1 w-full bg-gradient-to-r from-indigo-500 to-violet-600 rounded-t-2xl"></div>
+
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('modal-unreal')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <div class="flex items-center justify-between border-b border-white/10 pb-5 mb-6 gap-4">
+                    <div>
+                        <p class="text-violet-400 text-xs font-bold uppercase tracking-widest mb-1">Moteur de Jeu</p>
+                        <h2 class="text-3xl font-bold text-white">Unreal Engine 5</h2>
+                    </div>
+                    <span class="bg-violet-500/10 text-violet-300 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-violet-500/30">AAA & Cinéma</span>
+                </div>
+
+                <div class="space-y-6 text-gray-400 leading-relaxed">
+                    <p><strong class="text-white">C'est quoi ?</strong> Le moteur d'Epic Games, référence du photoréalisme. Utilisé pour les blockbusters (Fortnite, Matrix) et le cinéma (The Mandalorian).</p>
+
+                    <div>
+                        <h3 class="font-bold text-base text-blue-400 mb-2">🔍 Mon analyse</h3>
+                        <p class="text-sm">Unreal a creusé l'écart technologique avec la version 5. Avec <strong class="text-white">Nanite</strong> (géométrie virtualisée) et <strong class="text-white">Lumen</strong> (lumière globale dynamique), il supprime les contraintes techniques historiques. C'est le futur du rendu temps réel, mais il est très gourmand en ressources.</p>
+                    </div>
+
+                    <div class="bg-white/5 p-5 rounded-xl border border-white/5">
+                        <h3 class="font-bold text-xs uppercase text-gray-500 mb-3 tracking-widest">Fiche Technique</h3>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span><strong class="text-white">Langage :</strong>&nbsp;C++ / Blueprints (Visuel)</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span><strong class="text-white">Architecture :</strong>&nbsp;Object-Oriented</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0"></span><strong class="text-white">Points forts :</strong>&nbsp;Rendu graphique, Outils Cinéma</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-godot" class="hidden modal-backdrop fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onclick="handleBackdropClick(event, 'modal-godot')">
+        <div class="modal-panel relative bg-[#0c1228] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10">
+            <div class="h-1 w-full bg-gradient-to-r from-blue-400 to-cyan-500 rounded-t-2xl"></div>
+
+            <button class="absolute top-5 right-5 z-50 text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full p-1.5" onclick="closeModal('modal-godot')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 md:p-10">
+                <div class="flex items-center justify-between border-b border-white/10 pb-5 mb-6 gap-4">
+                    <div>
+                        <p class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-1">Moteur de Jeu</p>
+                        <h2 class="text-3xl font-bold text-white">Godot Engine</h2>
+                    </div>
+                    <span class="bg-blue-500/10 text-blue-400 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border border-blue-500/30">Open Source</span>
+                </div>
+
+                <div class="space-y-6 text-gray-400 leading-relaxed">
+                    <p><strong class="text-white">C'est quoi ?</strong> Le challenger libre et gratuit (licence MIT). Très léger, il gagne en popularité fulgurante comme alternative éthique.</p>
+
+                    <div>
+                        <h3 class="font-bold text-base text-blue-400 mb-2">🔍 Mon analyse</h3>
+                        <p class="text-sm">Godot est la réponse à la dépendance aux outils propriétaires. Il est parfait pour la 2D et s'améliore en 3D avec la version 4.0. Son système de "Nœuds" est très intuitif. C'est le choix de la sécurité juridique et de la liberté totale pour les développeurs.</p>
+                    </div>
+
+                    <div class="bg-white/5 p-5 rounded-xl border border-white/5">
+                        <h3 class="font-bold text-xs uppercase text-gray-500 mb-3 tracking-widest">Fiche Technique</h3>
+                        <ul class="space-y-2 text-sm text-gray-300">
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span><strong class="text-white">Langage :</strong>&nbsp;GDScript (type Python), C#, C++</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span><strong class="text-white">Architecture :</strong>&nbsp;Node-Tree System</li>
+                            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0"></span><strong class="text-white">Points forts :</strong>&nbsp;100% Gratuit, ultra-léger (&lt;100Mo)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div>
+            <div class="flex items-center justify-between mb-8 border-l-4 border-green-500 pl-4">
+                <h3 class="text-2xl font-bold text-green-300">⚡ Fil d'actualité / Flux Rss</h3>
+                <span class="text-xs text-gray-500 animate-pulse">● Live Feed (Source: Game Developer)</span>
+            </div>
+            
+            <div id="rss-feed-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="col-span-full text-center py-10 text-gray-500">
+                    Flux rss absent...
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====================================================================
+         PIED DE PAGE (CONTACT)
+         <footer> : élément sémantique HTML5 pour le bas de page.
+         id="contact" : sert de cible pour les liens "#contact" de la nav.
+         flex-col md:flex-row : empilé sur mobile, côte à côte sur tablette.
+         justify-between : espace les blocs (coordonnées à gauche, liens à droite).
+    ===================================================================== -->
+    <footer id="contact" class="bg-black text-white py-12 border-t border-white/10">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <h3 class="text-2xl font-bold mb-2 text-blue-500">Benjamin MAIRE</h3>
+                <p class="text-gray-400">Développeur d'applications & Web</p>
+                <a href="mailto:benjamin.maire119@gmail.com" class="mt-4 inline-block text-gray-300 hover:text-white transition">📧 benjamin.maire119@gmail.com</a>
+            </div>
+            <div class="flex gap-6 text-sm text-gray-500">
+                <a href="#formation" class="hover:text-blue-400">Formation</a>
+                <a href="#projets" class="hover:text-blue-400">Projets</a>
+                <a href="#veille" class="hover:text-blue-400">Veille</a>
+            </div>
+        </div>
+        <div class="text-center text-gray-700 text-xs mt-8">
+            &copy; 2025 Benjamin Maire - Portfolio BTS SIO
+        </div>
+    </footer>
+
+    <script src="./script.js"></script>
+</body>
+</html>

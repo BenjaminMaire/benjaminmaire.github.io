@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/source/**)",
+      "Read(//c/source/E6/**)",
+      "Bash(unzip -l \"c:/source/oral e5/Safran/GONOGO_4_1.zip\")",
+      "Bash(unzip -l \"c:/source/oral e5/Safran/GONOGO_4_1.apk\")",
+      "Bash(grep -E \"\\\\.\\(html|js|json|tsx?|css\\)$\")",
+      "Bash(unzip -l \"c:\\\\source\\\\E5\\\\oral e5\\\\Safran\\\\GONOGO_4_1.zip\")"
+    ]
+  }
+}
